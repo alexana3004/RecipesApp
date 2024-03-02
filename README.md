@@ -39,7 +39,7 @@ The main purpose was to learn how to implement the essential elements in web app
 - User can create a collection of private recipes and upload pictures
   ![My Recipes](https://github.com/alexana3004/RecipesApp/assets/116637406/495fb360-aca5-4dd4-8304-e096c5cb6e3c)
 
-- Search results are paginated
+- Paginated search results
 - Customized error pages
 - Feedback to user
   
