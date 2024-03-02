@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% block content %}
+    {% set recipe = data['recipe'][0] %}
+    {% set rating_count = data['recipe'][1] %}
+    {% set avg_rating = data['recipe'][2] if data['recipe'][2] else 0 %}
+    <div class="recipe-box recipe-container">
+        <h1 class="recipe-title highlight">{{ recipe.title }}</h1>
+        <div class="separator"></div>
+
+        <div class="row recipe-content my-5 gx-5">
+            <div class="recipe-column col-lg-7 col-sm-10">
+                <img src="{{ url_for('static', filename='images/'+recipe.img_filename) }}"
+                     alt="A picture of {{ recipe.title }}">
+
+                <!-- Recipe details -->
+                <p class="highlight">
+                    {% if recipe.prep_time %}
+                        Preparation&nbsp;time:&nbsp;{{ recipe.prep_time }}&nbsp;|
+                    {% endif %}
+
+                    {% if recipe.cook_time %}
+                        Cooking&nbsp;time:&nbsp;{{ recipe.cook_time }}&nbsp;|
+                    {% endif %}
+
+                    {% if recipe.serves %}
+                        Servings:&nbsp;{{ recipe.serves }}
+                    {% endif %}
+                </p>
+
+                <div class="recipe-details">
+                    {% if current_user.is_authenticated and recipe not in current_user.added_recipes %}
+                        <!-- Star buttons with form. -->
+                        <form method="post"
+                              action="{{ url_for('recipes.submit_rating', recipe_id=recipe.id) }}">
+                            {% for n in range(1, 6) %}
+                                {% if n<=avg_rating %}
+                                    <button type="submit" class="star-button btn" name="rating" value="{{ n }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="gold"
+                                             class="bi bi-star-fill" viewBox="0 0 16 16">
+                                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                        </svg>
+                                    </button>
+                                {% elif n - 1<avg_rating %}
+                                    <button type="submit" name="rating" value="{{ n }}"
+                                            class="star-button btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="gold"
+                                             class="bi bi-star-half" viewBox="0 0 16 16">
+                                            <path d="M5.354 5.119 7.538.792A.516.516 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.537.537 0 0 1 16 6.32a.548.548 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.52.52 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.58.58 0 0 1 .085-.302.513.513 0 0 1 .37-.245l4.898-.696zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.565.565 0 0 1 .162-.505l2.907-2.77-4.052-.576a.525.525 0 0 1-.393-.288L8.001 2.223 8 2.226v9.8z"/>
+                                        </svg>
+                                    </button>
+                                {% else %}
+                                    <button type="submit" name="rating" value="{{ n }}"
+                                            class="star-button btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="gold"
+                                             class="bi bi-star" viewBox="0 0 16 16">
+                                            <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                        </svg>
+                                    </button>
+                                {% endif %}
+
+                                <input type="hidden" name="next_url"
+                                       value="{{ url_for('recipes.recipe', recipe_title=recipe.title, recipe_id=recipe.id) }}">
+                            {% endfor %}
+                            <!-- Rating -->
+                            {% if rating_count %}
+                                <small class="muted-text">Rating: {{ avg_rating }} ({{ rating_count }} ratings)</small>
+                            {% else %}
+                                <small class="muted-text">No ratings yet.</small>
+                            {% endif %}
+                        </form>
+
+                    {% elif current_user.is_anonymous %}
+                        <!-- Star buttons. -->
+                        <div class="rating" title="You must be logged in to rate this!">
+                            {% for n in range(1, 6) %}
+                                {% if n<=avg_rating %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="gold"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                    </svg>
+                                {% elif n - 1<avg_rating %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="gold"
+                                         class="bi bi-star-half" viewBox="0 0 16 16">
+                                        <path d="M5.354 5.119 7.538.792A.516.516 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.537.537 0 0 1 16 6.32a.548.548 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.52.52 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.58.58 0 0 1 .085-.302.513.513 0 0 1 .37-.245l4.898-.696zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.565.565 0 0 1 .162-.505l2.907-2.77-4.052-.576a.525.525 0 0 1-.393-.288L8.001 2.223 8 2.226v9.8z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="gold"
+                                         class="bi bi-star" viewBox="0 0 16 16">
+                                        <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                    </svg>
+                                {% endif %}
+                            {% endfor %}
+                            <!-- Rating -->
+                            {% if rating_count %}
+                                <small class="muted-text">Rating: {{ avg_rating }} ({{ rating_count }} ratings)</small>
+                            {% else %}
+                                <small class="muted-text">No ratings yet.</small>
+                            {% endif %}
+                        </div>
+
+                    {% endif %}
+
+                    <!-- Category -->
+                    {% if recipe.category %}
+                        <p>Category: {{ recipe.category }}</p>
+                    {% endif %}
+
+                    {% if current_user.is_authenticated %}
+                        {% if recipe in current_user.added_recipes %}
+                            <!-- Edit and Delete buttons -->
+                            <div class="group-buttons">
+                                <a class="btn-elem btn btn-lg btn-dark mt-2"
+                                   href="{{ url_for('recipes.edit_recipe', recipe_id=recipe.id) }}">Edit</a>
+
+                                <a class="btn-outline-dark btn-elem btn btn-lg mt-2"
+                                   href="{{ url_for('recipes.delete_recipe', recipe_id=recipe.id) }}">Delete</a>
+                            </div>
+                        {% else %}
+                            <!-- Add/Remove from favourite recipes. -->
+                            <form method="post" action="{{ url_for('recipes.toggle_favourite', recipe_id=recipe.id) }}">
+                                {% if recipe in current_user.favourite_recipes %}
+                                    <button class="btn-elem btn btn-lg btn-secondary" type="submit">Remove favourite &#8722;</button>
+                                {% else %}
+                                    <button class="green-btn btn-elem btn btn-lg" type="submit">Add favourite &#43;</button>
+                                {% endif %}
+
+                                <input type="hidden" name="next_url"
+                                       value="{{ url_for('recipes.recipe', recipe_title=recipe.title, recipe_id=recipe.id) }}">
+                            </form>
+                        {% endif %}
+                    {% endif %}
+
+                </div>
+            </div>
+        <hr class="hidden-separator">
+
+            <!-- Ingredients -->
+            <div class="ingredients col-lg-5 col-sm-10 d-flex">
+                <div class="vr"></div>
+                <div class="px-5">
+                    <h2>Ingredients:</h2>
+                    <ul>
+                        {% for ingredient in recipe.ingredients.split('|') %}
+                            <li>{{ ingredient }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <!-- Instructions -->
+        <section class="instructions">
+            <h2>Instructions:</h2>
+
+            <ol>
+                {% for instruction in recipe.instructions.split('|') %}
+                    <li>{{ instruction }}</li>
+                {% endfor %}
+            </ol>
+        </section>
+
+        {% if recipe.private == False %}
+            <div class="separator"></div>
+            <!-- Comment section -->
+            <section class="comment-section">
+                {% if current_user.is_authenticated %}
+                    <form method="post" action="">
+                        {{ comment_form.hidden_tag() }}
+                        <p>{{ comment_form.body.label }}:</p>
+                        {{ comment_form.body(rows="3", cols="50") }}
+                        <button class="btn-elem btn btn-lg green-btn" type="submit">Save</button>
+                    </form>
+                {% endif %}
+            </section>
+
+            <section class="comment-section">
+                    <h2>Reviews:</h2>
+
+                    {% if data['comments'] %}
+                        {% for comment in data['comments'] %}
+                            <div class="comment-container">
+                                <div class="d-flex justify-content-between">
+                                <h3>
+                                    {{ comment.user.username }}
+                                    {% for rating in data['ratings'] %}
+                                        {% if rating.user == comment.user %}
+                                            {% for n in range(1, 6) %}
+                                                {% if n<= rating.rating %}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                         fill="gold"
+                                                         class="bi bi-star-fill" viewBox="0 0 16 16">
+                                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                                    </svg>
+                                                {% elif n - 1<rating.rating %}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                         fill="gold"
+                                                         class="bi bi-star-half" viewBox="0 0 16 16">
+                                                        <path d="M5.354 5.119 7.538.792A.516.516 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.537.537 0 0 1 16 6.32a.548.548 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.52.52 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.58.58 0 0 1 .085-.302.513.513 0 0 1 .37-.245l4.898-.696zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.565.565 0 0 1 .162-.505l2.907-2.77-4.052-.576a.525.525 0 0 1-.393-.288L8.001 2.223 8 2.226v9.8z"/>
+                                                    </svg>
+                                                {% else %}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                         fill="gold"
+                                                         class="bi bi-star" viewBox="0 0 16 16">
+                                                        <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                                    </svg>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </h3>
+
+                                <small>{{ comment.date_created.strftime('%Y-%m-%d') }}</small>
+                                </div>
+
+                                <div class="comment-body">
+                                    <p id="comment-content">{{ comment.body }}</p>
+{#                                    {% if %}#}
+                                        <a href="#comment-content">Read more</a>
+{#                                    {% else %}#}
+
+{#                                    {% endif %}#}
+                                </div>
+
+                                {% if comment in current_user.reviews %}
+                                        <!-- Edit comment -->
+                                        <details class="edit-comment">
+                                            <summary class="btn-elem">Edit</summary>
+
+                                            <form method="post">
+                                                <textarea rows="3" cols="50"
+                                                          name="edited_comment">{{ comment.body }}</textarea>
+                                                <input type="hidden" name="next_url"
+                                                       value="{{ url_for('recipes.recipe', recipe_title=recipe.title, recipe_id=recipe.id) }}">
+                                                <button class="btn-elem btn btn-lg green-btn" type="submit"
+                                                formaction="{{ url_for('user.edit_comment', comment_id=comment.id) }}">Save</button>
+
+                                                <!-- Delete comment -->
+                                                <button class="btn-outline-dark btn-elem btn btn-lg" type="submit"
+                                                        formaction="{{ url_for('user.delete_comment', comment_id=comment.id) }}">Delete
+                                                </button>
+                                            </form>
+
+
+                                        </details>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="comment-container">
+                            <p>No reviews yet.
+                                {% if current_user.is_authenticated %}
+                                    Be the first to leave a review.
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+            </section>
+        {% endif %}
+    </div>
+{% endblock %}

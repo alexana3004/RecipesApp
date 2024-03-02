@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+     <!-- Flashed messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="ur-flashwrapper flashwrapper flashed-messages">
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+    <div class="transparent-box overflow-auto">
+        {% if is_private %}
+            <h1 class="highlight">My Recipes</h1>
+        {% else %}
+            <h1 class="highlight">Favourite recipes</h1>
+        {% endif %}
+
+        <div class="recipes-container">
+            {% if recipes %}
+            {% for recipe in recipes %}
+                <!-- Recipe items -->
+                <hr>
+                <div class="recipe-item row">
+                    <div class="col-lg-5 col-sm-5">
+                        <a href="{{ url_for('recipes.recipe', recipe_title=recipe.title, recipe_id=recipe.id) }}">
+                            <img class="recipe-img " src="{{ url_for('static', filename='images/' + recipe.img_filename) }}"
+                             alt="A picture of {{ recipe.title }}">
+                        </a>
+                    </div>
+
+                    <div class="user-recipe-title col-lg-7 col-sm-7">
+                        <div class="truncate-title">
+                            <a href="{{ url_for('recipes.recipe', recipe_title=recipe.title, recipe_id=recipe.id) }}"
+                               title="{{ recipe.title }}">{{ recipe.title }}</a>
+                        </div>
+
+                        {% if is_private %}
+                            <div class="group-buttons">
+                                <a class="user-recipes-btn btn btn-lg btn-dark mt-2"
+                                   href="{{ url_for('recipes.edit_recipe', recipe_id=recipe.id) }}">Edit</a>
+
+                                <a class="btn-outline-dark user-recipes-btn btn btn-lg mt-2"
+                                   href="{{ url_for('recipes.delete_recipe', recipe_id=recipe.id) }}">Delete</a>
+                            </div>
+                        {% else %}
+                            <form method="post" action="{{ url_for('recipes.toggle_favourite', recipe_id=recipe.id) }}">
+                                <button type="submit" class="user-recipes-btn btn btn-lg btn-secondary">Remove &#8722;
+                                </button>
+                                <input type="hidden" name="next_url" value="{{ url_for('recipes.favourites') }}">
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+        <p>No recipes.</p>
+        {% endif %}
+        </div>
+
+        {% if is_private %}
+            <hr>
+            <!-- Add recipe button -->
+            <a class="add-recipe-btn btn-elem btn btn-lg btn-secondary" href="{{ url_for('recipes.add_recipe') }}">Add Recipe
+                &#43;
+            </a>
+        {% endif %}
+
+    </div>
+{% endblock %}

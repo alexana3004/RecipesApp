@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="transparent-box">
+        <h1 class="highlight">Add new recipe</h1>
+        <!-- Add/Edit recipe form. -->
+        <form method="post" action="" novalidate enctype="multipart/form-data">
+            <div class="recipe-form">
+
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.title.label }}<br>
+                {{ form.title(class_="input-field", size=40) }}
+                    {% for error in form.title.errors %}
+                        <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+            </p>
+
+            <p>
+                {{ form.category.label }}<br>
+                {{ form.category(class_="input-field", size=40) }}
+            </p>
+
+            <p>
+                {{ form.prep_time.label }}<br>
+                {{ form.prep_time(class_="input-field", size=40) }}
+            </p>
+
+            <p>
+                {{ form.cook_time.label }}<br>
+                {{ form.cook_time(class_="input-field", size=40) }}
+            </p>
+
+            <p>
+                {{ form.serves.label }}<br>
+                {{ form.serves(class_="input-field", size=40) }}
+            </p>
+
+            <p>
+                {{ form.ingredients.label }}<br>
+                {{ form.ingredients(class_="input-field", rows="3", cols="50", placeholder="Comma separated ingredients.") }}
+                {% for error in form.ingredients.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.instructions.label }}<br>
+                {{ form.instructions(class_="input-field", rows="3", cols="50") }}
+                {% for error in form.instructions.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.img_file.label }}<br>
+                {{ form.img_file }}
+                {% for error in form.img_file.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </p>
+
+                {{ form.submit(class_="btn-elem btn btn-lg btn-dark") }}
+                </div>
+
+        </form>
+    </div>
+{% endblock %}
