@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session
 from sqlalchemy import func
-from app.utils import get_categories
+from app.utilities.main import get_categories
 from app.models import Recipe, Review
 from app import db
 
