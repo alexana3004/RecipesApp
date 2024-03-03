@@ -1,6 +1,6 @@
 from app import db, login_manager
 from flask_login import UserMixin
-from .recipes_table.scraper_bot import ScraperBot
+from .utilities.scraper_bot import ScraperBot
 from sqlalchemy import CheckConstraint, func
 
 
