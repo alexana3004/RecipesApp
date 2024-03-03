@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, url_for, redirect, flash, request, abort
 from flask_login import login_required, current_user
-from app.recipes_table.main import update_recipes_table
-from app.utils import save_image, remove_old_image
+from app.utilities.main import update_recipes_table, save_image, remove_old_image
 from app.models import Recipe, Review
 from app.forms import CommentForm, AddRecipeForm
 from app import db
