@@ -57,7 +57,7 @@ def update_recipes_table():
     for url in reversed(recipes_urls):
         if check_recipe_in_db(url):
             recipe = Recipe()
-            recipe.get_recipe_info(url)
+            recipe.get_recipe_data(url)
             write_to_db(recipe)
             new_recipes_count += 1
     return new_recipes_count

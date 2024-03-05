@@ -102,7 +102,7 @@ class Recipe(db.Model):
     def __repr__(self):
         return f'Recipe : {self.title}'
 
-    def get_recipe_info(self, url):
+    def get_recipe_data(self, url):
         """
         Scrapes recipe's details from the given url and creates a new recipe object in the Recipe table.
         :param url: url from which to scrape recipe's data
