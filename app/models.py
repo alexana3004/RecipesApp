@@ -21,21 +21,6 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f'User : {self.username}'
 
-    def submit_rating(self, rating, recipe_id):
-        """
-        Replaces old rating if exists, else creates a new rating for the recipe with id = recipe_id
-        :param rating: int (1 - 5)
-        :param recipe_id: Recipe's id on which to add/replace rating
-        :return:
-        """
-        old_rating = Review.query.filter(Review.rating.isnot(None), Review.user_id == self.id, Review.recipe_id == recipe_id).first()
-        if old_rating:
-            old_rating.rating = rating
-        else:
-            new_rating = Review(rating=rating, user_id=self.id, recipe_id=recipe_id)
-            db.session.add(new_rating)
-        db.session.commit()
-
     def toggle_favourite(self, recipe_id):
         """
         Toggles recipe within user's favourite recipes
@@ -62,7 +47,7 @@ class User(db.Model, UserMixin):
             category=new_recipe['category'],
             prep_time=new_recipe['prep_time'],
             cook_time=new_recipe['cook_time'],
-            serves=new_recipe['serves'],
+            servings=new_recipe['servings'],
             ingredients=new_recipe['ingredients'].replace(',', ' | '),
             instructions=new_recipe['instructions'].replace('.', ' | '),
             img_filename=new_recipe['img_file'].filename if new_recipe['img_file'].filename else None,
@@ -70,6 +55,21 @@ class User(db.Model, UserMixin):
             user_id=self.id
         )
         db.session.add(recipe)
+        db.session.commit()
+
+    def submit_rating(self, rating, recipe_id):
+        """
+        Replaces old rating if exists, else creates a new rating for the recipe with id = recipe_id
+        :param rating: int (1 - 5)
+        :param recipe_id: Recipe's id on which to add/replace rating
+        :return:
+        """
+        old_rating = Review.query.filter(Review.rating.isnot(None), Review.user_id == self.id, Review.recipe_id == recipe_id).first()
+        if old_rating:
+            old_rating.rating = rating
+        else:
+            new_rating = Review(rating=rating, user_id=self.id, recipe_id=recipe_id)
+            db.session.add(new_rating)
         db.session.commit()
 
     def post_comment(self, body, recipe_id):
@@ -90,7 +90,7 @@ class Recipe(db.Model):
     category = db.Column(db.String(50))
     prep_time = db.Column(db.String(50))
     cook_time = db.Column(db.String(50))
-    serves = db.Column(db.String(10))
+    servings = db.Column(db.String(10))
     ingredients = db.Column(db.Text, nullable=False)
     instructions = db.Column(db.Text, nullable=False)
     img_filename = db.Column(db.String(100), default='default.jpg')
@@ -104,7 +104,7 @@ class Recipe(db.Model):
 
     def get_recipe_data(self, url):
         """
-        Scrapes recipe's details from the given url and creates a new recipe object in the Recipe table.
+        Scrapes recipe's details from the given url and creates a new recipe object in the Recipe table
         :param url: url from which to scrape recipe's data
         :return:
         """
@@ -114,7 +114,7 @@ class Recipe(db.Model):
         self.category = scraper.get_category()
         self.prep_time = recipe_details['prep_time']
         self.cook_time = recipe_details['cook_time']
-        self.serves = recipe_details['serves']
+        self.servings = recipe_details['servings']
         self.ingredients = scraper.get_ingredients()
         self.instructions = scraper.get_instructions()
         self.img_filename = scraper.get_image_filename()

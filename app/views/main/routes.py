@@ -15,6 +15,6 @@ def index():
     latest_recipes = db.session.query(
         Recipe, func.count(Review.rating).label('rating_count'), func.avg(Review.rating).label('avg_rating')).filter(
         Recipe.private.is_(False)).outerjoin(
-        Review, Recipe.id == Review.recipe_id).group_by(Recipe.id).all()
+        Review, Recipe.id == Review.recipe_id).group_by(Recipe.id).order_by(Recipe.id.desc()).limit(7).all()
 
-    return render_template('index.html', recipes_data=latest_recipes[-1:-7:-1])
+    return render_template('index.html', recipes_data=latest_recipes)

@@ -50,7 +50,7 @@ class AddRecipeForm(FlaskForm):
     category = StringField('Category:')
     prep_time = StringField('Preparation Time:')
     cook_time = StringField('Cooking Time:')
-    serves = StringField('Serves:')
+    servings = StringField('Servings:')
     ingredients = TextAreaField('Ingredients:', validators=[InputRequired()])
     instructions = TextAreaField('Instructions:', validators=[InputRequired()])
     img_file = FileField('Upload Image:', validators=[FileAllowed(['png', 'jpg'])])
@@ -66,7 +66,7 @@ class AddRecipeForm(FlaskForm):
         self.category = recipe_to_edit.category
         self.prep_time = recipe_to_edit.prep_time
         self.cook_time = recipe_to_edit.cook_time
-        self.serves = recipe_to_edit.serves
+        self.servings = recipe_to_edit.servings
         self.ingredients = recipe_to_edit.ingredients
         self.instructions = recipe_to_edit.instructions
         return self

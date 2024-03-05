@@ -66,8 +66,8 @@ class ScraperBot:
         """
         prep_time = self.soup.select_one('.recipe-props > div:nth-child(1)').getText().split(':')[1]
         cook_time = self.soup.select_one('.recipe-props > div:nth-child(2)').getText().split(':')[1]
-        serves = self.soup.select_one('.recipe-props > div:nth-child(3)').getText().split(':')[1]
-        return {'prep_time': prep_time, 'cook_time': cook_time, 'serves': serves}
+        servings = self.soup.select_one('.recipe-props > div:nth-child(3)').getText().split(':')[1]
+        return {'prep_time': prep_time, 'cook_time': cook_time, 'servings': servings}
 
     def get_category(self):
         """
@@ -95,7 +95,8 @@ class ScraperBot:
         Saves recipe's image to static/images folder
         :return:
         """
-        file_path = f"./static/images/{self.get_image_filename()}"
+        file_path = f"app./static/images/{self.get_image_filename()}"
         response = requests.get(url_root + self.get_image_source())
+
         with open(file_path, "wb") as file:
             file.write(response.content)

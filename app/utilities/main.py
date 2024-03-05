@@ -7,17 +7,20 @@ from PIL import Image
 from flask import current_app
 from sqlalchemy.sql import func
 
+# For more variety you can add other categories to main_categories list, such as: 'breakfast', 'desserts', 'vegetarian' and others.
 main_categories = ['dinner']
 
 
 def get_all_recipes_urls():
     """
-    Scrapes all recipe urls for all categories in main_categories
+    Scrapes all recipe urls for all categories in main_categories list
     :return: A list with recipe urls
     """
     urls = []
     for category in main_categories:
-        s = ScraperBot(f"https://myfoodbook.com.au/categories/{category}?")
+        # For efficiency reasons I set total_pages variable to 1 so that only one page gets scraped.
+        # For more recipes data the ScraperBot can get the total number of pages for each category.
+        # s = ScraperBot(f"https://myfoodbook.com.au/categories/{category}?")
         # total_pages = s.get_pages_total()
         total_pages = 1
         for n in range(total_pages):
@@ -28,12 +31,12 @@ def get_all_recipes_urls():
     return urls
 
 
-def check_recipe_in_db(url):
+def recipe_in_db(url):
     """
     :param url: Recipe url
     :return: True if url already exists in database.
     """
-    if not Recipe.query.filter_by(url=url).first():
+    if Recipe.query.filter_by(url=url).first():
         return True
 
 
@@ -55,7 +58,7 @@ def update_recipes_table():
     recipes_urls = get_all_recipes_urls()
     new_recipes_count = 0
     for url in reversed(recipes_urls):
-        if check_recipe_in_db(url):
+        if not recipe_in_db(url):
             recipe = Recipe()
             recipe.get_recipe_data(url)
             write_to_db(recipe)
