@@ -3,7 +3,7 @@
 ![homepage](https://github.com/alexana3004/RecipesApp/assets/116637406/101187c2-d6d8-4700-a51c-bf3c77f956c2)
 
 
-A minimal web app developed with Flask framework.
+A minimal web app developed with Flask framework that is responsive to desktop and mobile.
 
 The main purpose was to learn how to implement the essential elements in web application with Flask, including:
 - URL building
